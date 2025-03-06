@@ -46,3 +46,11 @@ func TestUploadObject(t *testing.T) {
 	err = client.UploadFileWithResume(context.Background(), &cfg, testFilePath)
 	require.NoError(t, err, "上传对象时出错")
 }
+
+func TestDownloadObject(t *testing.T) {
+	client, err := NewClient(&cfg)
+	require.NoError(t, err, "初始化 MinIO 客户端出错")
+
+	err = client.DownloadObject(context.Background(), &cfg, testFilePath)
+	require.NoError(t, err, "下载对象时出错")
+}
