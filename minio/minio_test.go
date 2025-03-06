@@ -1,7 +1,9 @@
 package minio
 
 import (
+	"bytes"
 	"context"
+	"github.com/minio/minio-go/v7"
 	. "go-minio-sync/config"
 	"testing"
 
@@ -64,4 +66,31 @@ func TestDeleteObject(t *testing.T) {
 
 	err = client.DownloadObject(context.Background(), &cfg, testFilePath)
 	assert.Error(t, err, "删除后下载对象应失败")
+}
+
+func TestListObjects(t *testing.T) {
+	ctx := context.Background()
+	client, err := NewClient(&cfg)
+	require.NoError(t, err, "初始化 MinIO 客户端出错")
+
+	// 上传两个文件
+	contents := [][]byte{
+		[]byte("file one"),
+		[]byte("file two"),
+	}
+	objects := []string{"file1.txt", "file2.txt"}
+
+	for i, obj := range objects {
+		_, err = client.minioClient.PutObject(
+			ctx,
+			cfg.Minio.Bucket, obj,
+			bytes.NewReader(contents[i]),
+			int64(len(contents[i])),
+			minio.PutObjectOptions{})
+		assert.NoErrorf(t, err, "上传对象出错%v", obj)
+	}
+
+	objs, err := client.ListObjects(ctx, &cfg)
+	require.NoError(t, err, "获取对象列表出错")
+	assert.GreaterOrEqual(t, len(objs), 2, "应至少存在两个对象")
 }
