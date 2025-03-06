@@ -54,3 +54,14 @@ func TestDownloadObject(t *testing.T) {
 	err = client.DownloadObject(context.Background(), &cfg, testFilePath)
 	require.NoError(t, err, "下载对象时出错")
 }
+
+func TestDeleteObject(t *testing.T) {
+	client, err := NewClient(&cfg)
+	require.NoError(t, err, "初始化 MinIO 客户端出错")
+
+	err = client.DeleteObject(context.Background(), &cfg, testFilePath)
+	require.NoError(t, err, "删除对象时出错")
+
+	err = client.DownloadObject(context.Background(), &cfg, testFilePath)
+	assert.Error(t, err, "删除后下载对象应失败")
+}

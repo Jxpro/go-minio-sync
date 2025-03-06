@@ -19,6 +19,10 @@ func (c *Client) DownloadObject(ctx context.Context, cfg *config.Config, filePat
 		_ = obj.Close()
 	}()
 
+	if _, err = obj.Stat(); err != nil {
+		return err
+	}
+
 	outFile, err := os.Create(filePath)
 	if err != nil {
 		return err
