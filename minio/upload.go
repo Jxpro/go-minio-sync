@@ -9,17 +9,17 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"go-minio-sync/config"
-	"go-minio-sync/state"
+	"go-minio-sync/file"
 )
 
 func (c *Client) UploadFileWithResume(ctx context.Context, cfg *config.Config, filePath string) error {
-	var st *state.State
+	var st *file.State
 	stateFile := filePath + ".upload.state"
 	objectName := cfg.Minio.UserPrefix + filePath
 
 	// 尝试读取状态文件，如果存在则恢复 UploadID
 	if data, err := os.ReadFile(stateFile); err == nil {
-		st, err = state.LoadState(data)
+		st, err = file.LoadState(data)
 		if err != nil {
 			_ = os.Remove(stateFile)
 		}
@@ -35,7 +35,7 @@ func (c *Client) UploadFileWithResume(ctx context.Context, cfg *config.Config, f
 		if err != nil {
 			return err
 		}
-		st = &state.State{
+		st = &file.State{
 			FilePath:    filePath,
 			UploadID:    UploadID,
 			FileSize:    fileInfo.Size(),
@@ -66,12 +66,12 @@ func (c *Client) UploadFileWithResume(ctx context.Context, cfg *config.Config, f
 	}
 
 	// 打开待上传文件
-	file, err := os.Open(filePath)
+	f, err := os.Open(filePath)
 	if err != nil {
 		return err
 	}
 	defer func() {
-		_ = file.Close()
+		_ = f.Close()
 	}()
 
 	var parts []minio.CompletePart
@@ -80,7 +80,7 @@ func (c *Client) UploadFileWithResume(ctx context.Context, cfg *config.Config, f
 	// 迭代读取并上传每个分块
 	for {
 		buffer := make([]byte, cfg.Chunk.Size)
-		n, err := file.Read(buffer)
+		n, err := f.Read(buffer)
 		if err != nil && err != io.EOF {
 			return err
 		}
