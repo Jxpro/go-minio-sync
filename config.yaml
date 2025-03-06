@@ -2,7 +2,14 @@ minio:
   endpoint: "localhost:9000"
   accessKey: "minioadmin"
   secretKey: "minioadmin"
+  UserPrefix: "test-user/"
+  bucket: "test-bucket"
   useSSL: false
+chunk:
+  size: 5242880 # 5MB
+watch:
+  dir: "C:\\Users\\xin\\Downloads\\temp"
+  delay: 1 # seconds
 tls:
   certFile: "path/to/cert.pem"
   keyFile: "path/to/key.pem"

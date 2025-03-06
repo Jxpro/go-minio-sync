@@ -23,10 +23,6 @@ var cfg = Config{
 	Chunk: ChunkConfig{
 		Size: 5 * 1024 * 1024,
 	},
-	TLS: TLSConfig{
-		CertFile: "",
-		KeyFile:  "",
-	},
 }
 
 const (

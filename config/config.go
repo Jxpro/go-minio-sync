@@ -7,6 +7,7 @@ import (
 type Config struct {
 	Minio MinioConfig
 	Chunk ChunkConfig
+	Watch WatchConfig
 	TLS   TLSConfig
 }
 
@@ -20,6 +21,11 @@ type MinioConfig struct {
 }
 type ChunkConfig struct {
 	Size int
+}
+
+type WatchConfig struct {
+	Dir   string
+	Delay int
 }
 
 type TLSConfig struct {
