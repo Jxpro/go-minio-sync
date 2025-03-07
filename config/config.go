@@ -9,6 +9,7 @@ type Config struct {
 	Chunk ChunkConfig
 	Watch WatchConfig
 	TLS   TLSConfig
+	MQ    MQConfig
 }
 
 type MinioConfig struct {
@@ -31,6 +32,14 @@ type WatchConfig struct {
 type TLSConfig struct {
 	CertFile string
 	KeyFile  string
+}
+
+type MQConfig struct {
+	Topic         string
+	Endpoint      string
+	ConsumerGroup string
+	AccessKey     string
+	SecretKey     string
 }
 
 // LoadConfig 读取并解析配置文件

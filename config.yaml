@@ -2,7 +2,7 @@ minio:
   endpoint: "localhost:9000"
   accessKey: "minioadmin"
   secretKey: "minioadmin"
-  UserPrefix: "test-user/"
+  userPrefix: "test-user/"
   bucket: "test-bucket"
   useSSL: false
 chunk:
@@ -13,3 +13,10 @@ watch:
 tls:
   certFile: "path/to/cert.pem"
   keyFile: "path/to/key.pem"
+mq:
+  topic: "test"
+  endpoint: "localhost:9876"
+  consumerGroup: "test-group"
+  accessKey: "Jr5P3yI7Ll9074AT"
+  secretKey: "G3qgd8kqxTa006yE"
+

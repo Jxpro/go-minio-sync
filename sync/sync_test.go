@@ -1,12 +1,23 @@
 package sync
 
 import (
+	. "go-minio-sync/config"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+var cfg = Config{
+	MQ: MQConfig{
+		Topic:         "test",
+		Endpoint:      "localhost:9876",
+		ConsumerGroup: "test-group",
+		AccessKey:     "Jr5P3yI7Ll9074AT",
+		SecretKey:     "G3qgd8kqxTa006yE",
+	},
+}
 
 func TestSaveAndLoadState(t *testing.T) {
 	tmpFile, err := os.CreateTemp("", "temp1g_*")
@@ -38,4 +49,12 @@ func TestSaveAndLoadState(t *testing.T) {
 	assert.Equal(t, state.UploadID, loaded.UploadID, "UploadID 不一致")
 	assert.Equal(t, state.TrunkLength, loaded.TrunkLength, "分块大小不一致")
 	assert.Equal(t, state.FileSize, loaded.FileSize, "文件大小不一致")
+}
+
+func TestMessageQueue(t *testing.T) {
+	mq, err := NewRocketInstance(&cfg)
+	require.NoError(t, err, "初始化 RocketMQ 客户端失败")
+
+	err = mq.Shutdown()
+	require.NoError(t, err, "关闭 RocketMQ 客户端失败")
 }
