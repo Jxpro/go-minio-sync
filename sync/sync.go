@@ -1,4 +1,4 @@
-package file
+package sync
 
 import (
 	"github.com/fsnotify/fsnotify"

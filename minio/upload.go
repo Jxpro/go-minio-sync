@@ -9,17 +9,17 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"go-minio-sync/config"
-	"go-minio-sync/file"
+	"go-minio-sync/sync"
 )
 
 func (c *Client) UploadFileWithResume(ctx context.Context, cfg *config.Config, filePath string) error {
-	var st *file.State
+	var st *sync.State
 	stateFile := filePath + ".upload.state"
 	objectName := cfg.Minio.UserPrefix + filePath
 
 	// 尝试读取状态文件，如果存在则恢复 UploadID
 	if data, err := os.ReadFile(stateFile); err == nil {
-		st, err = file.LoadState(data)
+		st, err = sync.LoadState(data)
 		if err != nil {
 			_ = os.Remove(stateFile)
 		}
@@ -35,7 +35,7 @@ func (c *Client) UploadFileWithResume(ctx context.Context, cfg *config.Config, f
 		if err != nil {
 			return err
 		}
-		st = &file.State{
+		st = &sync.State{
 			FilePath:    filePath,
 			UploadID:    UploadID,
 			FileSize:    fileInfo.Size(),

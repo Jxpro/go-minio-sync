@@ -8,8 +8,8 @@ import (
 	"syscall"
 
 	"go-minio-sync/config"
-	"go-minio-sync/file"
 	"go-minio-sync/minio"
+	"go-minio-sync/sync"
 )
 
 func run() {
@@ -43,7 +43,7 @@ func run() {
 	log.Println("创建存储桶成功")
 
 	// 启动文件监听
-	err = file.StartFileWatcher(cfg, file.Callback)
+	err = sync.StartFileWatcher(cfg, sync.Callback)
 	if err != nil {
 		log.Fatalf("启动文件监听失败: %v", err)
 	}

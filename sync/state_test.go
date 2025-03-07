@@ -1,4 +1,4 @@
-package file
+package sync
 
 import (
 	"os"
