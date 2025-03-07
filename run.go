@@ -43,7 +43,7 @@ func run() {
 	log.Println("创建存储桶成功")
 
 	// 启动文件监听
-	err = sync.StartFileWatcher(cfg, sync.Callback)
+	err = sync.StartFileWatcher(cfg, sync.EventHandle)
 	if err != nil {
 		log.Fatalf("启动文件监听失败: %v", err)
 	}

@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func Callback(event fsnotify.Event) {
+func EventHandle(event fsnotify.Event) {
 	file := event.Name
 	op := event.Op
 
