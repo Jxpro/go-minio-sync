@@ -4,7 +4,7 @@ import (
 	rocketmq "github.com/apache/rocketmq-clients/golang/v5"
 	"github.com/apache/rocketmq-clients/golang/v5/credentials"
 	"go-minio-sync/config"
-	"os"
+	"time"
 )
 
 type RocketMQ struct {
@@ -13,9 +13,6 @@ type RocketMQ struct {
 }
 
 func NewRocketInstance(cfg *config.Config) (*RocketMQ, error) {
-	_ = os.Setenv("mq.consoleAppender.enabled", "true")
-	rocketmq.ResetLogger()
-
 	producer, err := rocketmq.NewProducer(&rocketmq.Config{
 		Endpoint: cfg.MQ.Endpoint,
 		Credentials: &credentials.SessionCredentials{
@@ -41,6 +38,7 @@ func NewRocketInstance(cfg *config.Config) (*RocketMQ, error) {
 			AccessSecret: cfg.MQ.SecretKey,
 		},
 	},
+		rocketmq.WithAwaitDuration(time.Second*time.Duration(cfg.MQ.AwaitDuration)),
 		rocketmq.WithSubscriptionExpressions(map[string]*rocketmq.FilterExpression{
 			cfg.MQ.Topic: rocketmq.SUB_ALL,
 		}),

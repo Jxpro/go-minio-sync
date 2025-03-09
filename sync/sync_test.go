@@ -14,8 +14,7 @@ var cfg = Config{
 		Topic:         "TopicTest",
 		Endpoint:      "172.20.165.191:8081",
 		ConsumerGroup: "test-group",
-		AccessKey:     "Jr5P3yI7Ll9074AT",
-		SecretKey:     "G3qgd8kqxTa006yE",
+		AwaitDuration: 5,
 	},
 }
 

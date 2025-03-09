@@ -40,6 +40,7 @@ type MQConfig struct {
 	ConsumerGroup string
 	AccessKey     string
 	SecretKey     string
+	AwaitDuration int
 }
 
 // LoadConfig 读取并解析配置文件
