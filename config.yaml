@@ -14,7 +14,7 @@ tls:
   certFile: "path/to/cert.pem"
   keyFile: "path/to/key.pem"
 mq:
-  topic: "test" # 在创建 Producer 时无法自动创建 Topic，需要提前创建，否则连接会失败
+  topic: "ordTest" # 在创建 Producer 时无法自动创建 Topic，需要提前创建，否则连接会失败
   endpoint: "172.20.165.191:8081" # WSL中需要指定broker的IP地址，其自定义的网段在宿主机是不可达的；同时需要使用 Proxy 端口而不是 NameServer 端口
   consumerGroup: "test-group"
   awaitDuration: 5 # seconds

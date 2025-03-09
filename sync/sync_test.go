@@ -1,17 +1,22 @@
 package sync
 
 import (
-	. "go-minio-sync/config"
+	"context"
+	"fmt"
 	"os"
+	"strings"
 	"testing"
+	"time"
 
+	rocketmq "github.com/apache/rocketmq-clients/golang/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	. "go-minio-sync/config"
 )
 
 var cfg = Config{
 	MQ: MQConfig{
-		Topic:         "TopicTest",
+		Topic:         "ordTest2",
 		Endpoint:      "172.20.165.191:8081",
 		ConsumerGroup: "test-group",
 		AwaitDuration: 5,
@@ -50,9 +55,54 @@ func TestSaveAndLoadState(t *testing.T) {
 	assert.Equal(t, state.FileSize, loaded.FileSize, "文件大小不一致")
 }
 
-func TestMessageQueue(t *testing.T) {
+func TestMessageQueueInit(t *testing.T) {
 	mq, err := NewRocketInstance(&cfg)
 	require.NoError(t, err, "初始化 RocketMQ 客户端失败")
+
+	err = mq.Shutdown()
+	require.NoError(t, err, "关闭 RocketMQ 客户端失败")
+}
+
+func TestMessageQueueSend(t *testing.T) {
+	mq, err := NewRocketInstance(&cfg)
+	require.NoError(t, err, "初始化 RocketMQ 客户端失败")
+
+	t.Log("开始发送消息")
+	for i := 0; i < 100; i++ {
+		msg := &rocketmq.Message{
+			Topic: cfg.MQ.Topic,
+			Body:  []byte(fmt.Sprintf("this is a message %d:  in group-%d", i/10, i%10)),
+		}
+
+		// 发送同步消息
+		msg.SetMessageGroup(fmt.Sprintf("group-%d", i%10))
+
+		resp, err := mq.Producer.Send(context.TODO(), msg)
+		assert.NoError(t, err, "发送消息失败")
+		t.Logf("发送消息成功: %#v", resp[0])
+	}
+
+	err = mq.Shutdown()
+	require.NoError(t, err, "关闭 RocketMQ 客户端失败")
+}
+
+func TestMessageQueueReceive(t *testing.T) {
+	mq, err := NewRocketInstance(&cfg)
+	require.NoError(t, err, "初始化 RocketMQ 客户端失败")
+
+	t.Log("开始接收消息")
+	for {
+		mvs, err := mq.Consumer.Receive(context.TODO(), 1000, time.Second*10)
+		if err != nil && strings.Contains(err.Error(), "no new message") {
+			break
+		}
+
+		// 响应消息
+		for _, mv := range mvs {
+			_ = mq.Consumer.Ack(context.TODO(), mv)
+			t.Log(string(mv.GetBody()))
+		}
+	}
 
 	err = mq.Shutdown()
 	require.NoError(t, err, "关闭 RocketMQ 客户端失败")

@@ -20,6 +20,7 @@ func NewRocketInstance(cfg *config.Config) (*RocketMQ, error) {
 			AccessSecret: cfg.MQ.SecretKey,
 		},
 	},
+		// 实际使用时，message 中指定的 topic 会覆盖此处的配置
 		rocketmq.WithTopics(cfg.MQ.Topic),
 	)
 	if err != nil {
